@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { Search, Users, X, User } from 'lucide-react';
+import { 
+  Search, Users, X, User, Home, 
+  LayoutGrid, Briefcase, Calendar, 
+  Rocket, Trophy, MessageSquare 
+} from 'lucide-react';
 import { getAlumniDashboardStats } from '../api';
 
 const Navbar = ({ user, userName, onLogout }) => {
@@ -33,17 +37,16 @@ const Navbar = ({ user, userName, onLogout }) => {
     }
   }, [user]);
 
+  // Updated navLinks with Icons
   const navLinks = [
-    { name: 'Home', href: '/home' },
-    { name: 'Posts', href: '/feed' },
-    { name: 'Jobs', href: '/jobs' },
-    { name: 'Events', href: '/events' },
-    { name: 'Startups', href: '/startups' },
-    { name: 'Leaderboard', href: '/leaderboard' },
-    { name: 'Messages', href: '/messages' }
+    { name: 'Home', href: '/home', icon: Home },
+    { name: 'Posts', href: '/feed', icon: LayoutGrid },
+    { name: 'Jobs', href: '/jobs', icon: Briefcase },
+    { name: 'Events', href: '/events', icon: Calendar },
+    { name: 'Startups', href: '/startups', icon: Rocket },
+    { name: 'Leaderboard', href: '/leaderboard', icon: Trophy },
+    { name: 'Messages', href: '/messages', icon: MessageSquare }
   ];
-
-  const activeLinkStyle = { color: '#2563EB', fontWeight: '600' };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -65,22 +68,30 @@ const Navbar = ({ user, userName, onLogout }) => {
             </NavLink>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6 ml-auto">
-            <div className="flex items-baseline space-x-4">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.name}
-                  to={link.href}
-                  style={({ isActive }) => (isActive ? activeLinkStyle : undefined)}
-                  className="text-sm font-medium text-gray-600 hover:text-blue-600 transition"
-                >
-                  {link.name}
-                </NavLink>
-              ))}
+          {/* Desktop Menu - Stacked Icons + Text */}
+          <div className="hidden md:flex items-center space-x-2 ml-auto">
+            <div className="flex items-center space-x-1">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <NavLink
+                    key={link.name}
+                    to={link.href}
+                    className={({ isActive }) => `
+                      flex flex-col items-center min-w-[64px] px-2 pt-1 border-b-2 transition-all duration-200
+                      ${isActive 
+                        ? 'border-blue-600 text-blue-600 font-semibold' 
+                        : 'border-transparent text-gray-500 hover:text-blue-600'}
+                    `}
+                  >
+                    <Icon size={20} />
+                    <span className="text-[11px] mt-1 font-medium">{link.name}</span>
+                  </NavLink>
+                );
+              })}
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 ml-4">
               {/* Search */}
               <form onSubmit={handleSearchSubmit} className="flex items-center">
                 <input
@@ -113,17 +124,15 @@ const Navbar = ({ user, userName, onLogout }) => {
                   onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-lg"
                 >
-                  
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="text-gray-500" />
-                    </div>
-                
+                  <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    <User className="text-gray-500" />
+                  </div>
                   <div className="text-sm font-bold text-gray-700">{userName}</div>
                 </button>
 
                 {isProfileMenuOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100"
                     onMouseLeave={() => setProfileMenuOpen(false)}
                   >
                     <Link to="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setProfileMenuOpen(false)}>
@@ -171,22 +180,27 @@ const Navbar = ({ user, userName, onLogout }) => {
             </form>
           </div>
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.href}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {link.name}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <NavLink
+                  key={link.name}
+                  to={link.href}
+                  className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon size={20} className="mr-3" />
+                  {link.name}
+                </NavLink>
+              );
+            })}
             {user && user.type === 'alumni' && (
               <NavLink
                 to="/connections"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
+                className="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100"
                 onClick={() => setMobileMenuOpen(false)}
               >
+                <Users size={20} className="mr-3" />
                 Connections
               </NavLink>
             )}

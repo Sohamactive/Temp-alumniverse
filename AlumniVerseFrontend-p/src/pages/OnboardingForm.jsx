@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { updateUserProfile, uploadProfilePicture, getUserProfile } from '../api'; // Import getUserProfile
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { updateUserProfile, uploadProfilePicture, completeOnboarding } from '../api';
 import { Camera } from 'lucide-react';
 
 const OnboardingForm = ({ onLogin }) => {
   const { role } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -21,6 +22,23 @@ const OnboardingForm = ({ onLogin }) => {
     major: '',
     careerGoals: '',
   });
+
+  // Extract token and user data from URL parameters (for OAuth redirect)
+  useEffect(() => {
+    const token = searchParams.get('token');
+    const userId = searchParams.get('userId');
+    const name = searchParams.get('name');
+    const email = searchParams.get('email');
+
+    if (token && userId && name && email) {
+      // Store authentication data from OAuth redirect
+      localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userEmail', email);
+      localStorage.setItem('userRole', role);
+    }
+  }, [searchParams, role]);
 
   const { name, collegeName, graduationYear, currentCompany, jobTitle, expectedGraduationYear, major, careerGoals } = formData;
 
@@ -49,7 +67,7 @@ const OnboardingForm = ({ onLogin }) => {
       }
 
       // 1. Prepare and send the text-based profile data
-      const profileData = { name, collegeName };
+      const profileData = { name, collegeName, fromOnboarding: true };
       if (isAlumni) {
         Object.assign(profileData, { graduationYear, currentCompany, jobTitle });
       } else {
@@ -62,11 +80,13 @@ const OnboardingForm = ({ onLogin }) => {
         await uploadProfilePicture(token, imageFile);
       }
 
-      // 3. Fetch the final, complete user profile from the backend
-      const finalUserData = await getUserProfile(token);
+      // 3. Mark onboarding as complete
+      await completeOnboarding(token);
 
-      // 4. Call onLogin with the single, complete user data object
-      onLogin(finalUserData);
+      // 4. Update local state and navigate to home
+      const userName = localStorage.getItem('userName');
+      onLogin(role, userName);
+      navigate('/home', { replace: true });
 
     } catch (err) {
       console.error(err);

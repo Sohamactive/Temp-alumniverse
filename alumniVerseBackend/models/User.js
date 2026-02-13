@@ -3,62 +3,77 @@ const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
   // --- Basic Information ---
-  name: { 
-    type: String, 
-    required: true 
+  name: {
+    type: String,
+    required: true
   },
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true 
+  email: {
+    type: String,
+    required: true,
+    unique: true
   },
-  password: { 
-    type: String, 
-    required: true 
+  password: {
+    type: String,
+    required: false // Not required for Google OAuth users
   },
-  role: { 
-    type: String, 
-    enum: ['student', 'alumni'], 
-    required: true 
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true // Allows multiple null values, but unique non-null values
   },
-  collegeName: { 
-    type: String 
+  authMethod: {
+    type: String,
+    enum: ['traditional', 'google'],
+    required: true,
+    default: 'traditional'
+  },
+  role: {
+    type: String,
+    enum: ['student', 'alumni'],
+    required: true
+  },
+  collegeName: {
+    type: String
   },
 
   // --- Profile ---
-  profilePicture: { 
-    type: String, 
+  profilePicture: {
+    type: String,
     default: '' // store a URL/path if uploaded
+  },
+  isOnboarded: {
+    type: Boolean,
+    default: false // New users need to complete onboarding
   },
 
   // --- Points System ---
-  points: { 
-    type: Number, 
-    default: 0 
+  points: {
+    type: Number,
+    default: 0
   },
 
   // --- Alumni-specific Fields ---
-  graduationYear: { 
-    type: Number 
+  graduationYear: {
+    type: Number
   },
-  currentCompany: { 
-    type: String 
+  currentCompany: {
+    type: String
   },
-  jobTitle: { 
-    type: String 
+  jobTitle: {
+    type: String
   },
 
   // --- Student-specific Fields ---
-  expectedGraduationYear: { 
-    type: Number 
+  expectedGraduationYear: {
+    type: Number
   },
-  major: { 
-    type: String 
+  major: {
+    type: String
   },
-  careerGoals: { 
-    type: String 
+  careerGoals: {
+    type: String
   },
-}, { 
+}, {
   timestamps: true // Adds createdAt and updatedAt timestamps
 });
 
@@ -66,7 +81,8 @@ const UserSchema = new mongoose.Schema({
 
 // Hash password before saving the user
 UserSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) {
+  // Skip password hashing if password doesn't exist (Google OAuth) or hasn't been modified
+  if (!this.password || !this.isModified('password')) {
     return next();
   }
   const salt = await bcrypt.genSalt(10);

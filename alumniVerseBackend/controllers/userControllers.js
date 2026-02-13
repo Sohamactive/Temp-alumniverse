@@ -52,10 +52,40 @@ const updateUserProfile = async (req, res) => {
       user.careerGoals = req.body.careerGoals || user.careerGoals;
     }
 
+    // Mark as onboarded if updating from onboarding form
+    if (req.body.fromOnboarding) {
+      user.isOnboarded = true;
+    }
+
     const updatedUser = await user.save();
     res.json(updatedUser);
   } else {
     res.status(404).json({ message: 'User not found' });
+  }
+};
+
+/**
+ * @desc    Mark user as onboarded
+ * @route   PATCH /api/users/complete-onboarding
+ * @access  Private
+ */
+const completeOnboarding = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.isOnboarded = true;
+    await user.save();
+
+    res.json({
+      message: 'Onboarding completed successfully',
+      isOnboarded: true
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error' });
   }
 };
 
@@ -155,11 +185,12 @@ const checkUserStatus = async (req, res) => {
   }
 };
 
-module.exports = { 
+module.exports = {
   getAlumni,
   getUserProfile,
   updateUserProfile,
   getUserById,
   updateProfilePicture,
-  checkUserStatus
+  checkUserStatus,
+  completeOnboarding
 };

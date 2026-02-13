@@ -14,7 +14,7 @@ const MainLayout = ({ user, userName, userProfilePicture,onLogout }) => {
         </div>
       </main>
     </div>
-  );
+  );  
 };
 
 export default MainLayout;
