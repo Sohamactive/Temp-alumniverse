@@ -58,13 +58,7 @@ const Post = ({ postData, onDelete }) => {
       const newComment = await commentOnPost(token, post._id, commentText);
       setPost({ 
         ...post, 
-        comments: [...(post.comments || []), {
-          ...newComment,
-          user: {
-            ...newComment.user,
-            profilePicture: newComment.user.profilePicture || `https://i.pravatar.cc/150?u=${newComment.user._id}`
-          }
-        }]
+        comments: [...(post.comments || []), newComment]
       });
       setCommentText('');
     } catch (error) {
@@ -139,7 +133,11 @@ const Post = ({ postData, onDelete }) => {
   const isLiked = (post.likes || []).includes(currentUserId);
   const likeCount = (post.likes || []).length;
   const commentCount = (post.comments || []).length;
-  const authorProfilePicture = post.user.profilePicture || `https://i.pravatar.cc/150?u=${post.user._id}`;
+  
+  // Author image logic
+  const authorProfilePicture = post.user.profilePicture && post.user.profilePicture !== ''
+    ? post.user.profilePicture 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(post.user.name)}&background=random&color=fff`;
 
   return (
     <>
@@ -149,7 +147,7 @@ const Post = ({ postData, onDelete }) => {
           <img
             src={authorProfilePicture}
             alt="avatar"
-            className="w-12 h-12 rounded-full mr-4 object-cover"
+            className="w-12 h-12 rounded-full mr-4 object-cover border border-gray-100"
           />
           <div>
             <span className="font-bold text-gray-800">{post.user.name}</span>
@@ -226,7 +224,7 @@ const Post = ({ postData, onDelete }) => {
           <div className="mt-4 space-y-3">
             <form onSubmit={handleComment} className="flex space-x-2">
               <img
-                src={currentUserProfilePicture || `https://i.pravatar.cc/150?u=${currentUserId}`}
+                src={currentUserProfilePicture && currentUserProfilePicture !== '' ? currentUserProfilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&color=fff`}
                 alt="avatar"
                 className="w-8 h-8 rounded-full object-cover"
               />
@@ -241,7 +239,7 @@ const Post = ({ postData, onDelete }) => {
             {(post.comments || []).map(comment => (
               <div key={comment._id} className="flex items-start space-x-2">
                 <img
-                  src={comment.user.profilePicture || `https://i.pravatar.cc/150?u=${comment.user._id}`}
+                  src={comment.user.profilePicture && comment.user.profilePicture !== '' ? comment.user.profilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.user.name)}&background=random&color=fff`}
                   alt="avatar"
                   className="w-8 h-8 rounded-full object-cover"
                 />

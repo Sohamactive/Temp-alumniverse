@@ -1,59 +1,116 @@
 import React, { useState, useEffect } from 'react';
-import Post from '../components/Post';
-import CreatePost from '../components/CreatePost';
 import { getPosts, createPost } from '../api';
+import Post from '../components/Post';
+import { Image as ImageIcon, User } from 'lucide-react';
 
-const FeedPage = ({ user }) => {
+const FeedPage = ({ user, userName, userProfilePicture }) => {
   const [posts, setPosts] = useState([]);
-  const [error, setError] = useState('');
+  const [content, setContent] = useState('');
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch posts when the component loads
+  // Safely get the user's name and picture from props or localStorage
+  const currentUserName = userName || localStorage.getItem('userName') || 'User';
+  const storedProfilePic = userProfilePicture || localStorage.getItem('userProfilePicture');
+
+  // Unified fallback logic for the avatar
+  const avatarSrc = storedProfilePic && storedProfilePic !== 'undefined' && storedProfilePic !== ''
+    ? storedProfilePic
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserName)}&background=random&color=fff`;
+
   useEffect(() => {
     const fetchPosts = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const fetchedPosts = await getPosts(token);
-          if (Array.isArray(fetchedPosts)) {
-            setPosts(fetchedPosts);
-          } else {
-            setPosts([]);
-          }
-        } catch (err) {
-          setError('Could not fetch posts.');
-        }
+      try {
+        const token = localStorage.getItem('token');
+        const data = await getPosts(token);
+        setPosts(data);
+      } catch (error) {
+        console.error("Failed to fetch posts", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchPosts();
   }, []);
 
-  const handleCreatePost = async (postData) => {
-    // This is the checkpoint to see if the function is being called
-    console.log('--- Step 2: handleCreatePost in FeedPage was called! ---');
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    if (!content.trim() && !image) return;
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setError('You must be logged in to post.');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('content', content);
+    if (image) formData.append('image', image);
+
     try {
-      const newPost = await createPost(token, postData);
+      const token = localStorage.getItem('token');
+      const newPost = await createPost(token, formData);
       setPosts([newPost, ...posts]);
-    } catch (err) {
-      setError('Failed to create post.');
+      setContent('');
+      setImage(null);
+    } catch (error) {
+      console.error("Failed to create post", error);
     }
   };
 
+  const handleDeletePost = (postId) => {
+    setPosts(posts.filter(p => p._id !== postId));
+  };
+
   return (
-    <>
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-      <CreatePost user={user} onPost={handleCreatePost} />
-      <div className="feed">
-        {posts.map((post) => (
-          <Post key={post._id} post={post} />
-        ))}
+    <div className="max-w-3xl mx-auto">
+      {/* Create Post Form */}
+      <div className="bg-white p-4 rounded-lg shadow-md mb-6">
+        <div className="flex items-start space-x-4">
+          <img
+            src={avatarSrc}
+            alt="avatar"
+            className="w-12 h-12 rounded-full object-cover border border-gray-100 flex-shrink-0"
+          />
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full p-3 border-none rounded-lg focus:ring-0 bg-gray-100 resize-none"
+            placeholder={`What's on your mind, ${currentUserName}?`}
+            rows="2"
+          />
+        </div>
+
+        <form onSubmit={handleCreatePost} className="flex justify-between items-center mt-4">
+          <label className="cursor-pointer text-gray-500 hover:text-blue-600 flex items-center">
+            <ImageIcon className="mr-2" /> Add media
+            <input 
+              type="file" 
+              className="hidden" 
+              accept="image/*" 
+              onChange={(e) => setImage(e.target.files[0])} 
+            />
+          </label>
+          <button 
+            type="submit" 
+            className="bg-blue-600 text-white font-bold py-2 px-6 rounded-full hover:bg-blue-700 transition"
+          >
+            Post
+          </button>
+        </form>
+        {image && <p className="text-sm text-gray-500 mt-2 pl-16">Selected: {image.name}</p>}
       </div>
-    </>
+
+      {/* Posts Feed */}
+      {loading ? (
+        <p className="text-center text-gray-500 mt-8">Loading feed...</p>
+      ) : (
+        <div className="space-y-6">
+          {posts.map(post => (
+            <Post
+              key={post._id}
+              postData={post}
+              currentUserProfilePicture={avatarSrc} // Pass avatar for each post
+              onDelete={handleDeletePost}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -12,11 +12,10 @@ const Navbar = ({ user, userName, onLogout }) => {
   const navigate = useNavigate();
 
   const userProfilePicture = localStorage.getItem('userProfilePicture');
-  const avatarSrc = userProfilePicture 
+  // Updated avatar logic to use ui-avatars for a better default experience
+  const avatarSrc = userProfilePicture && userProfilePicture !== 'undefined' && userProfilePicture !== ''
     ? userProfilePicture 
-    : userName 
-      ? `https://i.pravatar.cc/150?u=${userName}` 
-      : 'https://i.pravatar.cc/150?u=default';
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(userName || 'User')}&background=random&color=fff`;
 
   useEffect(() => {
     if (user && user.type === 'alumni') {
@@ -113,11 +112,13 @@ const Navbar = ({ user, userName, onLogout }) => {
                   onClick={() => setProfileMenuOpen(!isProfileMenuOpen)}
                   className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-lg"
                 >
-                  
-                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      <User className="text-gray-500" />
+                    <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                      {userProfilePicture ? (
+                        <img src={avatarSrc} alt="Profile" className="h-full w-full object-cover" />
+                      ) : (
+                        <User className="text-gray-500" />
+                      )}
                     </div>
-                
                   <div className="text-sm font-bold text-gray-700">{userName}</div>
                 </button>
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowRight, User, Mail, Lock } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { BASE_URL } from "../api";
 
 const AuthPage = ({ onLogin }) => {
@@ -32,10 +32,12 @@ const AuthPage = ({ onLogin }) => {
         const body = { email, password, role };
         const res = await axios.post(`${BASE_URL}/auth/login`, body, config);
         
+        // Ensure all items are set correctly, including the missing profile picture!
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userName', res.data.name);
         localStorage.setItem('userRole', res.data.role);
-        localStorage.setItem('userId', res.data._id);
+        localStorage.setItem('userId', res.data._id); 
+        localStorage.setItem('userProfilePicture', res.data.profilePicture || ""); // ✅ Added missing line
 
         onLogin(res.data.role, res.data.name);
       } catch (err) {
@@ -50,7 +52,7 @@ const AuthPage = ({ onLogin }) => {
         localStorage.setItem('userName', res.data.name);
         localStorage.setItem('userRole', res.data.role);
         localStorage.setItem('userId', res.data._id);
-        localStorage.setItem('userProfilePicture', res.data.profilePicture || "");
+        localStorage.setItem('userProfilePicture', res.data.profilePicture || ""); 
 
         navigate(`/onboarding/${role}`);
       } catch (err) {
@@ -62,109 +64,80 @@ const AuthPage = ({ onLogin }) => {
   const title = isLoginView ? 'Login' : 'Sign Up';
   const roleDisplay = role.charAt(0).toUpperCase() + role.slice(1);
 
-  // Background style (same as Landing Page)
-  const backgroundStyle = {
-    backgroundImage: 'url("/background.jpg")',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-  };
-
   return (
-    <div 
-      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]" 
-      style={backgroundStyle}
-    >
-      {/* Glassmorphism Card */}
-      <div className="bg-white/40 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md transition-all duration-300">
-        
-        <header className="mb-8 text-center">
-          <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
-            {roleDisplay} {title}
-          </h1>
-          <p className="text-gray-800 text-sm font-medium opacity-80">
-            Welcome back! Please enter your details.
-          </p>
-        </header>
-
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-2">
+          {roleDisplay} {title}
+        </h1>
         {error && (
-          <div className="mb-6 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-900 text-sm font-medium text-center backdrop-blur-sm">
+          <p className="text-center text-red-500 bg-red-100 p-2 rounded-md my-4">
             {error}
-          </div>
+          </p>
         )}
-
-        <form onSubmit={handleAuth} className="space-y-4">
-          {!isLoginView && (
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
+        <form onSubmit={handleAuth}>
+          <div className="space-y-4">
+            {!isLoginView && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={name}
+                  onChange={onChange}
+                  required
+                  className="w-full mt-1 p-3 border rounded-lg"
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email Address
+              </label>
               <input
-                type="text"
-                name="name"
-                placeholder="Full Name"
-                value={name}
+                type="email"
+                name="email"
+                value={email}
                 onChange={onChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-white/50 border border-white/60 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-500 text-gray-900"
+                className="w-full mt-1 p-3 border rounded-lg"
               />
             </div>
-          )}
-          
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={onChange}
-              required
-              className="w-full pl-10 pr-4 py-3 bg-white/50 border border-white/60 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-500 text-gray-900"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <input
+                type="password"
+                name="password"
+                value={password}
+                onChange={onChange}
+                required
+                className="w-full mt-1 p-3 border rounded-lg"
+              />
+            </div>
           </div>
-
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" size={18} />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={password}
-              onChange={onChange}
-              required
-              className="w-full pl-10 pr-4 py-3 bg-white/50 border border-white/60 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-gray-500 text-gray-900"
-            />
-          </div>
-
           <button
             type="submit"
-            className="w-full mt-4 bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center group"
+            className="w-full mt-8 bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center"
           >
-            {title} 
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+            {title} <ArrowRight className="ml-2" size={20} />
           </button>
         </form>
-
-        <p className="text-center text-sm text-gray-800 mt-8 font-medium">
+        <p className="text-center text-sm text-gray-600 mt-6">
           {isLoginView ? "Don't have an account?" : "Already have an account?"}
           <button
             onClick={() => {
               setIsLoginView(!isLoginView);
               setError('');
             }}
-            className="font-bold text-blue-700 hover:underline ml-2 transition-all"
+            className="font-semibold text-blue-600 hover:underline ml-1"
           >
             {isLoginView ? 'Sign Up' : 'Login'}
           </button>
         </p>
-
-        <footer className="mt-8 text-center">
-            <button 
-                onClick={() => navigate('/landing')}
-                className="text-xs text-gray-700 font-bold uppercase tracking-widest hover:text-gray-900 opacity-60 hover:opacity-100 transition-opacity"
-            >
-                ← Back to Home
-            </button>
-        </footer>
       </div>
     </div>
   );

@@ -27,7 +27,10 @@ const ProfilePage = () => {
   if (error) return <p className="text-red-500">{error}</p>;
   if (!profile) return <p>Loading profile...</p>;
 
-  const avatarSrc = profile.profilePicture || `https://i.pravatar.cc/150?u=${profile.name}`;
+  // Fallback to UI-Avatars if no profile picture is set
+  const avatarSrc = profile.profilePicture && profile.profilePicture.trim() !== '' 
+    ? profile.profilePicture 
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=random&color=fff`;
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
@@ -36,7 +39,7 @@ const ProfilePage = () => {
         <img
           src={avatarSrc}
           alt="Profile"
-          className="w-32 h-32 rounded-full object-cover mb-4"
+          className="w-32 h-32 rounded-full object-cover mb-4 border-4 border-blue-100"
         />
         <h1 className="text-3xl font-bold text-gray-800">{profile.name}</h1>
         <p className="text-gray-500">{profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}</p>

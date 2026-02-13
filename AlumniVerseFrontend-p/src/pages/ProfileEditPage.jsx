@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserProfile, updateUserProfile, uploadProfilePicture } from '../api'; // Import uploadProfilePicture
+import { getUserProfile, updateUserProfile, uploadProfilePicture } from '../api'; 
 import { Camera } from 'lucide-react';
 
 const ProfileEditPage = () => {
@@ -46,7 +46,8 @@ const ProfileEditPage = () => {
         localStorage.setItem('userProfilePicture', newPictureData.profilePicture);
       }
       
-      navigate('/profile'); // Redirect to profile page on success
+      // ✅ Force a page reload instead of just routing so that Navbar catches the new image immediately
+      window.location.href = '/profile'; 
     } catch (err) {
       setError('Failed to update profile.');
     }
@@ -63,9 +64,9 @@ const ProfileEditPage = () => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
           <label className="relative cursor-pointer">
             <img 
-              src={imagePreview || 'https://i.pravatar.cc/150'} 
+              src={imagePreview || 'https://ui-avatars.com/api/?name=User&background=random'} 
               alt="Profile Preview"
-              className="w-32 h-32 rounded-full object-cover"
+              className="w-32 h-32 rounded-full object-cover border-4 border-gray-100"
             />
             <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center text-white opacity-0 hover:opacity-100 transition-opacity">
               <Camera />

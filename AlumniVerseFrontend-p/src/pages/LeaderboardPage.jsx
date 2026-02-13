@@ -44,7 +44,11 @@ const LeaderboardPage = () => {
             <div key={alumnus._id} className="flex items-center justify-between border-b pb-3 last:border-b-0">
               <div className="flex items-center">
                 <span className="text-xl font-bold text-gray-400 w-8">{index + 1}</span>
-                <img src={`https://i.pravatar.cc/40?u=${alumnus.name}`} alt={alumnus.name} className="h-10 w-10 rounded-full mx-4" />
+                <img 
+                  src={alumnus.profilePicture && alumnus.profilePicture !== '' ? alumnus.profilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(alumnus.name)}&background=random&color=fff`} 
+                  alt={alumnus.name} 
+                  className="h-10 w-10 rounded-full mx-4 object-cover border border-gray-100" 
+                />
                 <div>
                   <p className="font-bold">{alumnus.name}</p>
                   <p className="text-sm text-gray-500">{alumnus.jobTitle || 'Alumnus'}</p>
@@ -68,6 +72,11 @@ const LeaderboardPage = () => {
               <div key={user._id} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="font-bold text-gray-400 w-6">{index + 1}.</span>
+                  <img 
+                    src={user.profilePicture && user.profilePicture !== '' ? user.profilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff`} 
+                    alt={user.name} 
+                    className="h-6 w-6 rounded-full mr-2 object-cover border border-gray-100" 
+                  />
                   <p className="font-semibold">{user.name}</p>
                 </div>
                 <p className="font-bold text-blue-600">{user.count} Mentees</p>
@@ -84,6 +93,11 @@ const LeaderboardPage = () => {
               <div key={user._id} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="font-bold text-gray-400 w-6">{index + 1}.</span>
+                  <img 
+                    src={user.profilePicture && user.profilePicture !== '' ? user.profilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff`} 
+                    alt={user.name} 
+                    className="h-6 w-6 rounded-full mr-2 object-cover border border-gray-100" 
+                  />
                   <p className="font-semibold">{user.name}</p>
                 </div>
                 <p className="font-bold text-green-600">{user.count} Jobs</p>
@@ -100,6 +114,11 @@ const LeaderboardPage = () => {
               <div key={user._id} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className="font-bold text-gray-400 w-6">{index + 1}.</span>
+                  <img 
+                    src={user.profilePicture && user.profilePicture !== '' ? user.profilePicture : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random&color=fff`} 
+                    alt={user.name} 
+                    className="h-6 w-6 rounded-full mr-2 object-cover border border-gray-100" 
+                  />
                   <p className="font-semibold">{user.name}</p>
                 </div>
                 <p className="font-bold text-yellow-600">{user.count} Posts</p>
