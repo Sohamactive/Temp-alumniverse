@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // const BASE_URL = "https://alumniversebackend.onrender.com/api";// Your backend server URL
 const BASE_URL = "http://localhost:5000/api";
-export {BASE_URL};
+export { BASE_URL };
 
 console.log(BASE_URL);
 
@@ -38,6 +38,12 @@ export const getUserProfile = async (token) => {
 export const updateUserProfile = async (token, profileData) => {
   const config = createAuthConfig(token);
   const { data } = await axios.put(`${BASE_URL}/users/profile`, profileData, config);
+  return data;
+};
+
+export const completeOnboarding = async (token) => {
+  const config = createAuthConfig(token);
+  const { data } = await axios.patch(`${BASE_URL}/users/complete-onboarding`, {}, config);
   return data;
 };
 

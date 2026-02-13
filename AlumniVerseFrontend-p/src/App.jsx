@@ -4,6 +4,8 @@ import { BrowserRouter, Routes, Route, useNavigate, Navigate, useLocation } from
 // Import Pages
 import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
+import AuthSuccessPage from './pages/AuthSuccessPage';
+import AuthErrorPage from './pages/AuthErrorPage';
 import OnboardingForm from './pages/OnboardingForm';
 import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
@@ -60,11 +62,21 @@ function App() {
     }
   }, [location, user]);
 
-   const handleLogin = (data) => {
-    setUser({ type: data.role });
-    setUserName(data.name);
-    // setUserProfilePicture(data.profilePicture || '');
-    navigate('/home');
+   const handleLogin = (roleOrData, name, shouldNavigate = true) => {
+    // Handle both formats: (data) or (role, name)
+    if (typeof roleOrData === 'object') {
+      // Old format: handleLogin(data) where data = { role, name }
+      setUser({ type: roleOrData.role });
+      setUserName(roleOrData.name);
+    } else {
+      // New format: handleLogin(role, name)
+      setUser({ type: roleOrData });
+      setUserName(name);
+    }
+    // Only navigate if explicitly requested (for backward compatibility with traditional auth)
+    if (shouldNavigate) {
+      navigate('/home');
+    }
   };
 
   // ...
@@ -86,6 +98,8 @@ const handleLogout = () => {
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/auth/:role" element={<AuthPage onLogin={handleLogin} />} />
+      <Route path="/auth/success" element={<AuthSuccessPage onLogin={handleLogin} />} />
+      <Route path="/auth/error" element={<AuthErrorPage />} />
       <Route path="/onboarding/:role" element={<OnboardingForm onLogin={handleLogin} />} />
 
       <Route

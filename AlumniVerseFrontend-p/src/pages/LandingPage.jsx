@@ -1,20 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import backgroundImage from '../assets/background.jpg';
 
 const LandingPage = () => {
   const navigate = useNavigate();
 
   // Ensure 'background.jpg' is placed inside your project's 'public' folder
   const backgroundStyle = {
-    backgroundImage: 'url("/background.jpg")',
+    backgroundImage: `url(${backgroundImage})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   };
 
   return (
-    <div 
-      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]" 
+    <div
+      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]"
       style={backgroundStyle}
     >
       {/* Glassmorphism Card:
@@ -23,10 +24,10 @@ const LandingPage = () => {
         - animate-in: Standard Tailwind entry animation
       */}
       <div className="bg-white/30 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center transition-all duration-500 hover:shadow-white/20">
-        
+
         <header className="mb-10">
           <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tight drop-shadow-sm">
-            Welcome to <span className="text-blue-600">AlumniVerse</span> 
+            Welcome to <span className="text-blue-600">AlumniVerse</span>
           </h1>
           <p className="text-gray-800 font-bold opacity-90">
             Connect. Mentor. Grow.
@@ -59,7 +60,7 @@ const LandingPage = () => {
             I am a Student
           </button>
         </div>
-        
+
         <footer className="mt-12">
           <p className="text-[10px] text-gray-900 uppercase tracking-[0.3em] font-bold opacity-50">
             AlumniVerse Network
