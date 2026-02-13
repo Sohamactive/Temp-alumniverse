@@ -1,32 +1,70 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Make sure this is imported
+import { useNavigate } from 'react-router-dom';
 
-// CORRECT: The `onLogin` prop is removed from the function signature.
 const LandingPage = () => {
-  // We use the `useNavigate` hook to handle clicks.
   const navigate = useNavigate();
 
+  // Ensure 'background.jpg' is placed inside your project's 'public' folder
+  const backgroundStyle = {
+    backgroundImage: 'url("/background.jpg")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm text-center">
-        <h1 className="text-3xl font-bold text-blue-600 mb-2">Welcome! 👋</h1>
-        <p className="text-gray-600 mb-8">Connect. Mentor. Grow.</p>
-        <div className="space-y-4">
+    <div 
+      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]" 
+      style={backgroundStyle}
+    >
+      {/* Glassmorphism Card:
+        - bg-white/30: Semi-transparent
+        - backdrop-blur-xl: The 'frosted glass' look
+        - animate-in: Standard Tailwind entry animation
+      */}
+      <div className="bg-white/30 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center transition-all duration-500 hover:shadow-white/20">
+        
+        <header className="mb-10">
+          <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tight drop-shadow-sm">
+            Welcome to <span className="text-blue-600">AlumniVerse</span> 
+          </h1>
+          <p className="text-gray-800 font-bold opacity-90">
+            Connect. Mentor. Grow.
+          </p>
+        </header>
+
+        <div className="space-y-5">
+          {/* Alumni Action */}
           <button
-            // CORRECT: onClick now navigates to the AuthPage for alumni.
             onClick={() => navigate('/auth/alumni')}
-            className="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition"
+            className="w-full flex items-center justify-center bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl hover:bg-blue-700 hover:scale-[1.03] active:scale-95 transition-all shadow-lg shadow-blue-500/40"
           >
+            <span className="text-xl mr-3"></span>
             I am an Alumni
           </button>
+
+          {/* Decorative Divider */}
+          <div className="flex items-center py-2">
+            <div className="flex-grow border-t border-gray-900/20"></div>
+            <span className="px-4 text-gray-900 text-xs font-black uppercase tracking-widest">or</span>
+            <div className="flex-grow border-t border-gray-900/20"></div>
+          </div>
+
+          {/* Student Action */}
           <button
-            // CORRECT: onClick now navigates to the AuthPage for students.
             onClick={() => navigate('/auth/student')}
-            className="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition"
+            className="w-full flex items-center justify-center bg-emerald-500 text-white font-bold py-4 px-6 rounded-2xl hover:bg-emerald-600 hover:scale-[1.03] active:scale-95 transition-all shadow-lg shadow-emerald-500/40"
           >
+            <span className="text-xl mr-3"></span>
             I am a Student
           </button>
         </div>
+        
+        <footer className="mt-12">
+          <p className="text-[10px] text-gray-900 uppercase tracking-[0.3em] font-bold opacity-50">
+            AlumniVerse Network
+          </p>
+        </footer>
       </div>
     </div>
   );
