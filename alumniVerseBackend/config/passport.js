@@ -23,13 +23,13 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.BACKEND_URL}/api/auth/google/callback`,
+      callbackURL: `${(process.env.BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')}/api/auth/google/callback`,
       passReqToCallback: true, // Pass request to callback to access query params
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // Extract role from session (set during initial redirect)
-        const role = req.session.oauthRole;
+        // Extract role from state (passed during initial redirect)
+        const role = req.query.state;
 
         if (!role) {
           return done(new Error('Role not specified'), null);

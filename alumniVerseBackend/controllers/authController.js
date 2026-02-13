@@ -108,6 +108,7 @@ const googleAuth = (req, res, next) => {
 
   passport.authenticate('google', {
     scope: ['profile', 'email'],
+    state: role,
   })(req, res, next);
 };
 
