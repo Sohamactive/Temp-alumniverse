@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../assets/background.jpg';
+import ParticlesBackground from '../components/ParticlesBackground';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -15,15 +16,18 @@ const LandingPage = () => {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]"
+      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%] relative overflow-hidden"
       style={backgroundStyle}
     >
+      {/* Particles Animation */}
+      <ParticlesBackground />
+
       {/* Glassmorphism Card:
         - bg-white/30: Semi-transparent
         - backdrop-blur-xl: The 'frosted glass' look
         - animate-in: Standard Tailwind entry animation
       */}
-      <div className="bg-white/30 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center transition-all duration-500 hover:shadow-white/20">
+      <div className="bg-white/30 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center transition-all duration-500 hover:shadow-white/20 relative z-10">
 
         <header className="mb-10">
           <h1 className="text-4xl font-black text-gray-900 mb-2 tracking-tight drop-shadow-sm">

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ArrowRight, User, Mail, Lock } from 'lucide-react';
 import { BASE_URL } from "../api";
 import backgroundImage from '../assets/background.jpg';
+import ParticlesBackground from '../components/ParticlesBackground';
 
 const AuthPage = ({ onLogin }) => {
   const { role } = useParams();
@@ -86,11 +87,12 @@ const AuthPage = ({ onLogin }) => {
 
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%]"
+      className="min-h-screen w-full flex items-center justify-start p-6 md:pl-[10%] lg:pl-[15%] relative overflow-hidden"
       style={backgroundStyle}
     >
+      <ParticlesBackground />
       {/* Glassmorphism Card */}
-      <div className="bg-white/40 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md transition-all duration-300">
+      <div className="bg-white/40 backdrop-blur-xl border border-white/40 p-10 rounded-[2.5rem] shadow-2xl w-full max-w-md transition-all duration-300 relative z-10">
 
         <header className="mb-8 text-center">
           <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">

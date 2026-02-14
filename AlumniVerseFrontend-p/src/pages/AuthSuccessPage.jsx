@@ -33,8 +33,11 @@ const AuthSuccessPage = ({ onLogin }) => {
         // Force a hard reload to ensure state is correctly initialized from localStorage
         // This fixes the blank screen issue on redirect
         window.location.href = '/home';
+      } else {
+        // If not onboarded, redirect to onboarding page with the role and original params
+        setIsProcessing(false);
+        navigate(`/onboarding/${role}?${searchParams.toString()}`);
       }
-      // If not onboarded, user is already at /onboarding from OAuth callback
     } else {
       setIsProcessing(false);
       setError('Authentication failed. Missing required data.');
